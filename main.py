@@ -3,6 +3,42 @@ import os
 from dotenv import load_dotenv
 
 
+def iterate_on_questions(textbook_text, previous_questions):
+    openai.organization = "org-1EAYlJSwfnMNuS2Z6d6I4cNU"
+    load_dotenv()
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    openai.Model.list()
+    prompt_messages = []
+    prompt_messages.append({"role": "system", "content": "You are an instructor designing new course content."})
+    prompt_messages.append({"role": "user",
+                            "content": "I am going to feed you textbook data and I want you to read it without saying "
+                                       "anything. Say yes if you understand"})
+    for text_chunk in textbook_text:
+        prompt_messages.append({"role": "user", "content": text_chunk})
+    prompt_messages.append({"role": "user", "content": "Ok that is all the textbook data, say yes if you understand"})
+    prompt_messages.append({"role": "user",
+                            "content": "I am going to give you 5 sample multiple choice questions, I want you to "
+                                       "identify which ones are too simplistic and don't require complex thought. "
+                                       "Explain why they don't require much complex thought. Say "
+                                       "yes if you understand"})
+    prompt_messages.append({"role": "user",
+                            "content": previous_questions})
+    prompt_messages.append({"role": "user",
+                            "content": "Ok, now that you understand why those were too simplistic, can you write me 5 "
+                                       "new questions given the information from the textbook and using your "
+                                       "knowledge of what is too simplistic. Avoid questions with answers which can "
+                                       "be found "
+                                       "directly in the text and prefer questions that require synthesis of that "
+                                       "knowledge and critical thinking. "
+                                       "Put them in a multiple choice format and then list the answers"})
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-0301",
+        messages=prompt_messages
+    )
+
+    return completion.choices[0].message['content']
+
+
 def write_questions(textbook_text):
     # Use a breakpoint in the code line below to debug your script.
     openai.organization = "org-1EAYlJSwfnMNuS2Z6d6I4cNU"
@@ -12,18 +48,22 @@ def write_questions(textbook_text):
     prompt_messages = []
     prompt_messages.append({"role": "system", "content": "You are an instructor designing new course content."})
     prompt_messages.append({"role": "user",
-                            "content": "I am going to feed you textbook data and I want you to read it without saying anything. Say yes if you understand"})
+                            "content": "I am going to feed you textbook data and I want you to read it without saying "
+                                       "anything. Say yes if you understand"})
     for text_chunk in textbook_text:
         prompt_messages.append({"role": "user", "content": text_chunk})
     prompt_messages.append({"role": "user", "content": "Ok that is all the textbook data, say yes if you understand"})
     prompt_messages.append({"role": "user",
-                            "content": "Write 5 questions from what you read that require a combination of critical thinking and synthesis, put them in a multiple choice format and then list the answers"})
+                            "content": "Write 5 questions from what you read that require a combination of critical "
+                                       "thinking and synthesis. Avoid questions with answers which can be found "
+                                       "directly in the text. Put them in a multiple choice format and then list "
+                                       "the answers"})
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0301",
         messages=prompt_messages
     )
 
-    print(completion.choices[0].message)
+    return completion.choices[0].message['content']
 
 
 def textbook_scrape(textbook_file_name):
@@ -56,7 +96,7 @@ def summarize_text(textbook_text):
         prompt_messages.append({"role": "user", "content": text_chunk})
     prompt_messages.append({"role": "user", "content": "Ok that is all the textbook data, say yes if you understand"})
     prompt_messages.append({"role": "user",
-                            "content": "Write a summary of no more than 500 words from that data, focusing on what seems to be the most important content"})
+                            "content": "Write a summary of no more than 300 words from that data, focusing on what seems to be the most important content"})
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0301",
         messages=prompt_messages
@@ -66,9 +106,9 @@ def summarize_text(textbook_text):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    #print(textbook_scrape("ch1PrinciplesSysDesign.txt"))
+    # print(textbook_scrape("ch1PrinciplesSysDesign.txt"))
     summaries = summary_extraction(textbook_scrape("ch1PrinciplesSysDesign.txt"))
-    write_questions(summaries)
+    print(iterate_on_questions(summaries, write_questions(summaries)))
     # for line in textbook_scrape("ch1PrinciplesSysDesign.txt"):
     #    print(line)
     # textbook_scrape("ch1IntroGameTheory.txt")
