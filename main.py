@@ -96,7 +96,7 @@ def summarize_text(textbook_text):
         prompt_messages.append({"role": "user", "content": text_chunk})
     prompt_messages.append({"role": "user", "content": "Ok that is all the textbook data, say yes if you understand"})
     prompt_messages.append({"role": "user",
-                            "content": "Write a summary of no more than 300 words from that data, focusing on what seems to be the most important content"})
+                            "content": "Write a summary of no more than 300 words from that data, focusing on what seems to be the most important content for students' learning objectives to be maximized from those summaries"})
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0301",
         messages=prompt_messages
@@ -108,7 +108,7 @@ def summarize_text(textbook_text):
 if __name__ == '__main__':
     # print(textbook_scrape("ch1PrinciplesSysDesign.txt"))
     summaries = summary_extraction(textbook_scrape("ch1PrinciplesSysDesign.txt"))
-    print(iterate_on_questions(summaries, write_questions(summaries)))
+    print(iterate_on_questions(summaries, iterate_on_questions(summaries, iterate_on_questions(summaries, write_questions(summaries)))))
     # for line in textbook_scrape("ch1PrinciplesSysDesign.txt"):
     #    print(line)
     # textbook_scrape("ch1IntroGameTheory.txt")
