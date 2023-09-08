@@ -109,7 +109,7 @@ if __name__ == '__main__':
     # print(textbook_scrape("ch1PrinciplesSysDesign.txt"))
     summaries = summary_extraction(textbook_scrape("ch1PrinciplesSysDesign.txt"))
     print(iterate_on_questions(summaries, iterate_on_questions(summaries, iterate_on_questions(summaries, write_questions(summaries)))))
-    rating = input("Please rate how these questions are: ")
+    rating = input("Please rate how these questions are from 1 to 10: ")
     # for line in textbook_scrape("ch1PrinciplesSysDesign.txt"):
     #    print(line)
     # textbook_scrape("ch1IntroGameTheory.txt")
