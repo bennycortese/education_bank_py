@@ -39,6 +39,43 @@ def iterate_on_questions(textbook_text, previous_questions):
     return completion.choices[0].message['content']
 
 
+def iterate_on_questions_with_rating(textbook_text, previous_questions, rating):
+    openai.organization = "org-1EAYlJSwfnMNuS2Z6d6I4cNU"
+    load_dotenv()
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    openai.Model.list()
+    prompt_messages = []
+    prompt_messages.append({"role": "system", "content": "You are an instructor designing new course content."})
+    prompt_messages.append({"role": "user",
+                            "content": "I am going to feed you textbook data and I want you to read it without saying "
+                                       "anything. Say yes if you understand"})
+    for text_chunk in textbook_text:
+        prompt_messages.append({"role": "user", "content": text_chunk})
+    prompt_messages.append({"role": "user", "content": "Ok that is all the textbook data, say yes if you understand"})
+    prompt_messages.append({"role": "user",
+                            "content": "I am going to give you 5 sample multiple choice questions, I want you to "
+                                       "identify which ones are too simplistic and don't require complex thought. "
+                                       "These are rated with this rating " + rating + ","
+                                       "Explain why they don't require much complex thought. Say "
+                                       "yes if you understand"})
+    prompt_messages.append({"role": "user",
+                            "content": previous_questions})
+    prompt_messages.append({"role": "user",
+                            "content": "Ok, now that you understand why those were too simplistic, can you write me 5 "
+                                       "new questions given the information from the textbook and using your "
+                                       "knowledge of what is too simplistic. Avoid questions with answers which can "
+                                       "be found "
+                                       "directly in the text and prefer questions that require synthesis of that "
+                                       "knowledge and critical thinking. "
+                                       "Put them in a multiple choice format and then list the answers"})
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-0301",
+        messages=prompt_messages
+    )
+
+    return completion.choices[0].message['content']
+
+
 def write_questions(textbook_text):
     # Use a breakpoint in the code line below to debug your script.
     openai.organization = "org-1EAYlJSwfnMNuS2Z6d6I4cNU"
@@ -110,6 +147,7 @@ if __name__ == '__main__':
     summaries = summary_extraction(textbook_scrape("ch1PrinciplesSysDesign.txt"))
     print(iterate_on_questions(summaries, iterate_on_questions(summaries, iterate_on_questions(summaries, write_questions(summaries)))))
     rating = input("Please rate how these questions are from 1 to 10: ")
+
     # for line in textbook_scrape("ch1PrinciplesSysDesign.txt"):
     #    print(line)
     # textbook_scrape("ch1IntroGameTheory.txt")
