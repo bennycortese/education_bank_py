@@ -148,7 +148,8 @@ if __name__ == '__main__':
     previous_questions = iterate_on_questions(summaries, iterate_on_questions(summaries, iterate_on_questions(summaries, write_questions(summaries))))
     print(previous_questions)
     rating = input("Please rate how these questions are from 1 to 10: ")
-    iterate_on_questions_with_rating(summaries, previous_questions, rating)
+    rated_questions_1 = iterate_on_questions_with_rating(summaries, previous_questions, rating)
+    print(rated_questions_1)
 
     # for line in textbook_scrape("ch1PrinciplesSysDesign.txt"):
     #    print(line)
