@@ -150,6 +150,7 @@ if __name__ == '__main__':
     rating = input("Please rate how these questions are from 1 to 10: ")
     rated_questions_1 = iterate_on_questions_with_rating(summaries, previous_questions, rating)
     print(rated_questions_1)
+    print("What do you think of these questions? Please rate again from 1 to 10: ")
 
     # for line in textbook_scrape("ch1PrinciplesSysDesign.txt"):
     #    print(line)
